@@ -17,7 +17,7 @@ public class WikiSemanticChunker {
 
         String content = document.getContent();
 
-        // Split by Markdown headings (##, ###, etc.)
+
         String[] sections = content.split("\n(?=#+\\s)");
 
         int chunkIndex = 0;
