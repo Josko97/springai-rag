@@ -3,6 +3,8 @@ package com.springai_rag_backend.service;
 import com.springai_rag_backend.chunking.model.Chunk;
 import com.springai_rag_backend.dto.ChatRequest;
 import com.springai_rag_backend.dto.ChatResponse;
+import com.springai_rag_backend.prompt.PromptOrchestrator;
+import com.springai_rag_backend.prompt.model.ChatPrompt;
 import com.springai_rag_backend.retrieval.RetrievalService;
 import com.springai_rag_backend.retrieval.model.RetrievalResult;
 import lombok.RequiredArgsConstructor;
@@ -14,28 +16,25 @@ import org.springframework.stereotype.Service;
 public class ChatService {
 
     private final ChatClient chatClient;
-    private final RetrievalService retrievalService;
+
+    private final PromptOrchestrator promptOrchestrator;
 
     public ChatResponse chat(ChatRequest request) {
         String userMessage = request.getMessage();
 
-        RetrievalResult retrievalResult = retrievalService.retrieve(userMessage);
-        String context = buildContext(retrievalResult);
+        ChatPrompt chatPrompt = promptOrchestrator.build(userMessage);
+
+        String llmInput = chatPrompt.getGroundingRule()
+                + "\n\n"
+                + chatPrompt.getContext().getContextText()
+                + "\n\nUser Question:\n"
+                + userMessage;
 
         String aiResponse = chatClient.prompt()
-                .system(context)
-                .user(request.getMessage())
+                .system(chatPrompt.getSystemInstructions().getInstructions())
+                .user(llmInput)
                 .call().content();
 
         return new ChatResponse(aiResponse);
-    }
-
-    private String buildContext(RetrievalResult retrievalResult) {
-        StringBuilder contextBuilder = new StringBuilder();
-        for (Chunk chunk : retrievalResult.getChunks()) {
-            contextBuilder.append(chunk.getContent()).append("\n\n");
-        }
-
-        return contextBuilder.toString();
     }
 }
