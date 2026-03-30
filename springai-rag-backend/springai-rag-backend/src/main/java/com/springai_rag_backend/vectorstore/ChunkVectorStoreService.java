@@ -2,7 +2,10 @@ package com.springai_rag_backend.vectorstore;
 
 import com.springai_rag_backend.chunking.model.Chunk;
 import org.springframework.ai.document.Document;
+import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
+import org.springframework.ai.vectorstore.filter.Filter;
+import org.springframework.ai.vectorstore.filter.FilterExpressionBuilder;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +37,23 @@ public class ChunkVectorStoreService {
         }).collect(Collectors.toList());
 
         vectorStore.add(documents);
+    }
+
+    public void deleteAll() {
+        FilterExpressionBuilder filterBuilder = new FilterExpressionBuilder();
+        Filter.Expression filter = filterBuilder.gte("chunkIndex", -1).build();
+        SearchRequest searchRequest = SearchRequest.builder().query(" ")
+                .filterExpression(filter)
+                .topK(10)
+                .build();
+        while (!vectorStore.similaritySearch(searchRequest).isEmpty()) {
+            vectorStore.delete(filter);
+        }
+    }
+
+    public void deleteByIdentity(String identity) {
+        FilterExpressionBuilder filterBuilder = new FilterExpressionBuilder();
+        vectorStore.delete(filterBuilder.eq("identity", identity).build());
     }
 }
 

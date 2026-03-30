@@ -1,15 +1,15 @@
 package com.springai_rag_backend.service;
 
-import com.springai_rag_backend.chunking.model.Chunk;
+
 import com.springai_rag_backend.dto.ChatRequest;
 import com.springai_rag_backend.dto.ChatResponse;
 import com.springai_rag_backend.prompt.PromptOrchestrator;
 import com.springai_rag_backend.prompt.model.ChatPrompt;
-import com.springai_rag_backend.retrieval.RetrievalService;
-import com.springai_rag_backend.retrieval.model.RetrievalResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Service;
+
+
 
 @Service
 @RequiredArgsConstructor
@@ -38,3 +38,4 @@ public class ChatService {
         return new ChatResponse(aiResponse);
     }
 }
+

@@ -12,13 +12,13 @@ public class ChunkRankingComparator implements Comparator<Chunk> {
     @Override
     public int compare(Chunk a, Chunk b) {
 
-        // 1. source priority
+
         int sourceCompare = Integer.compare(sourcePriority(a), sourcePriority(b));
         if (sourceCompare != 0) {
             return sourceCompare;
         }
 
-        // 2. DB table priority
+
         if (isDbChunk(a) && isDbChunk(b)) {
             int tableCompare = Integer.compare(tablePriority(a), tablePriority(b));
             if (tableCompare != 0) {
@@ -26,8 +26,6 @@ public class ChunkRankingComparator implements Comparator<Chunk> {
             }
         }
 
-
-        // 3. Recency
         LocalDate dateA = extractRelevantDate(a);
         LocalDate dateB = extractRelevantDate(b);
         if (dateA != null && dateB != null) {

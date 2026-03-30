@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +18,19 @@ public class DatabaseIngestionService {
 
     private static final Logger log = LoggerFactory.getLogger(DatabaseIngestionService.class);
     private final JdbcTemplate jdbcTemplate;
+
+    public List<IngestedDocument> ingest(String tableName) {
+        if("faqs".equalsIgnoreCase(tableName)) {
+            return ingestFaqs();
+        }
+        if("release_notes".equalsIgnoreCase(tableName)) {
+            return ingestReleaseNotes();
+        }
+        if("announcements".equalsIgnoreCase(tableName)) {
+            return ingestAnnouncements();
+        }
+        return Collections.emptyList();
+    }
 
     public List<IngestedDocument> ingestDatabaseContent() {
         List<IngestedDocument> docs = new ArrayList<>();
@@ -43,6 +57,7 @@ public class DatabaseIngestionService {
                     "DB",
                     content,
                     Map.of("table", "faqs",
+                            "identity", "DB#faqs",
                             "id", row.get("id"),
                             "department", row.get("department"),
                             "visibility", row.get("visibility")
@@ -68,6 +83,7 @@ public class DatabaseIngestionService {
                     "DB",
                     content,
                     Map.of("table", "release_notes",
+                            "identity", "DB#release_notes",
                             "id", row.get("id"),
                             "version", row.get("version"),
                             "releaseDate", row.get("release_date")
@@ -92,10 +108,11 @@ public class DatabaseIngestionService {
                     content,
                     Map.of(
                             "table", "announcements",
+                            "identity", "DB#announcements",
                             "id", row.get("id"),
                             "category", row.get("category"),
                             "effectiveFrom", row.get("effective_from"),
-                            "effectiveTo", row.get("effectiveTo") != null ? row.get("effectiveTo") : "",
+                            "effectiveTo", row.get("effective_to") != null ? row.get("effective_to") : "",
                             "sourceType", row.get("source_type")
                     )
             ));
@@ -103,4 +120,5 @@ public class DatabaseIngestionService {
         return docs;
     }
 }
+
 

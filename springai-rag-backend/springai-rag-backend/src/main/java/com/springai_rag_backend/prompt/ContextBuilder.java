@@ -23,8 +23,6 @@ public class ContextBuilder {
     }
 
     private void appendCitation(StringBuilder sb, Chunk chunk) {
-        // [PDF:HR_Leave_policy.pdf]
-        // [DB:faqs#5]
 
         Map<String, Object> metadata = chunk.getMetadata();
         String source = metadata.get("source").toString();
