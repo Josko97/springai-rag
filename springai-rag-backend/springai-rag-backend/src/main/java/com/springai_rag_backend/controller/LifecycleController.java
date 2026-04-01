@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/admin/lifecycle")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:3000")
 class LifecycleController {
 
     private final KnowledgeLifecycleService knowledgeLifecycleService;
